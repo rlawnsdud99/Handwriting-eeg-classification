@@ -4,6 +4,7 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
+from mne.decoding import CSP
 
 
 def load_eeg_data(filename):
@@ -12,14 +13,14 @@ def load_eeg_data(filename):
 
 
 def preprocess_data(raw):
-    raw.filter(l_freq=1, h_freq=45)
+    # raw.filter(l_freq=1, h_freq=45)
 
-    ica = mne.preprocessing.ICA(n_components=10, random_state=97, max_iter=800)
-    ica.fit(raw)
-    raw.load_data()
-    ica.apply(raw)
+    # ica = mne.preprocessing.ICA(n_components=10, random_state=97, max_iter=800)
+    # ica.fit(raw)
+    # raw.load_data()
+    # ica.apply(raw)
 
-    raw.filter(l_freq=1, h_freq=8)
+    # raw.filter(l_freq=1, h_freq=8)
 
     # Annotation에서 이벤트 생성
     events, event_id_from_anno = mne.events_from_annotations(raw)
@@ -44,10 +45,10 @@ def preprocess_data(raw):
             "S 12",
         ]
     }
-
+    # "H" "E" "L" "L" "O" "," "W" "O" "R" "L" "D" "!"
     # Epoch 생성
-    epoch_tmin, epoch_tmax = -0.2, 0.5  # 시작과 끝을 -1s ~ 1s로 지정
-    baseline = (None, 0)  # baseline correction을 위한 시간 범위
+    epoch_tmin, epoch_tmax = -1, 1  # 시작과 끝을 -1s ~ 1s로 지정
+    baseline = (-0.3, 0)  # baseline correction을 위한 시간 범위
     epochs = mne.Epochs(
         raw,
         events,
@@ -65,9 +66,14 @@ def preprocess_data(raw):
 
     labels = epochs.events[:, -1]
 
+    # # CSP 적용
+    # csp = CSP(n_components=csp_components, transform_into="average_power")
+    # data_csp = csp.fit_transform(data, labels)
+
     # Normalization
     data -= np.mean(data, axis=0)
     data /= np.std(data, axis=0)
+
     return data, labels
 
 

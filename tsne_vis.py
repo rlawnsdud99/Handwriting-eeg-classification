@@ -9,25 +9,24 @@ from sklearn.decomposition import PCA
 def apply_pca_then_tsne(
     x_data, y_labels, title="PCA + t-SNE plot", n_pca_components=50, perplexity=50
 ):
-    # PCA 적용
-    pca = PCA(n_components=n_pca_components)
-    x_pca = pca.fit_transform(x_data.reshape(x_data.shape[0], -1))
+    # # PCA 적용
+    # pca = PCA(n_components=n_pca_components)
+    # x_pca = pca.fit_transform(x_data.reshape(x_data.shape[0], -1))
 
     # t-SNE 적용
-    tsne = TSNE(n_components=3, perplexity=perplexity, random_state=42)
-    x_tsne = tsne.fit_transform(x_pca)
+    tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
+    x_tsne = tsne.fit_transform(x_data)
 
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection="3d")
 
-    scatter = ax.scatter(
-        x_tsne[:, 0], x_tsne[:, 1], x_tsne[:, 2], c=y_labels, cmap="viridis"
-    )
-
+    # scatter = ax.scatter(
+    #     x_tsne[:, 0], x_tsne[:, 1], x_tsne[:, 2], c=y_labels, cmap="viridis"
+    # )
+    scatter = ax.scatter(x_tsne[:, 0], x_tsne[:, 1], c=y_labels, cmap="viridis")
     ax.set_title(title)
     ax.set_xlabel("t-SNE Dimension 1")
     ax.set_ylabel("t-SNE Dimension 2")
-    ax.set_zlabel("t-SNE Dimension 3")
 
     legend_labels = [
         plt.Line2D(

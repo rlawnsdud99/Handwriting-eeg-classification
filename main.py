@@ -1,30 +1,21 @@
 from data_preprocessing import load_eeg_data, preprocess_data, split_data, apply_tsne
-from model_definition import EEGNet
+from model_definition import EEGNet, EEG_LSTM, Simple1DCNN, TCNN
 from train_eval import train_model
 from test import test_model
 import numpy as np
 
 
 def main():
-    filename = f"subject_1.set"
+    filename = f"./data/subject_1.set"
     # preprocess
     raw = load_eeg_data(filename)
     data, labels = preprocess_data(raw)
     X_train, X_val, X_test, y_train, y_val, y_test = split_data(data, labels)
 
-    # # Load preprocessed data from .npy files
-    # X_train = np.load("x_train.npy")
-    # y_train = np.load("y_train.npy")
-    # X_val = np.load("x_val.npy")
-    # y_val = np.load("y_val.npy")
-    # X_test = np.load("x_test.npy")
-    # y_test = np.load("y_test.npy")
-
     # load train / test dataset
     num_channels = X_train.shape[1]  # 데이터에 따라 변경
-    model = EEGNet(num_classes=len(np.unique(y_train)), num_channels=num_channels)
-
-    train_model(model, X_train, y_train, X_val, y_val, 100)
+    model = Simple1DCNN(num_channels=num_channels, num_classes=12)  # 데이터에 따라 변경
+    train_model(model, X_train, y_train, X_val, y_val, 30)
 
     # test
     test_model(model, X_test, y_test)

@@ -6,7 +6,7 @@ import torch.nn as nn
 
 
 def test_model(model, x_test, y_test):
-    x_test_tensor = torch.tensor(x_test, dtype=torch.float32).unsqueeze(1)
+    x_test_tensor = torch.tensor(x_test, dtype=torch.float32)
     y_test_tensor = torch.tensor(y_test, dtype=torch.long)
     test_dataset = TensorDataset(x_test_tensor, y_test_tensor)
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)

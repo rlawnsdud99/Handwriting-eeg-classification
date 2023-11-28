@@ -4,13 +4,24 @@ from torch.utils.data import DataLoader, TensorDataset
 from model_definition import EEGNet
 import torch.nn as nn
 import numpy as np
+import random
+
+
+# 랜덤 시드 고정 함수
+def seed_everything(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
 def train_model(model, x_train, y_train, x_val, y_val, num_epochs=None):
     # 데이터를 PyTorch Tensor로 변환
-    x_train_tensor = torch.tensor(x_train, dtype=torch.float32).unsqueeze(1)
+    x_train_tensor = torch.tensor(x_train, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train, dtype=torch.long)
-    x_val_tensor = torch.tensor(x_val, dtype=torch.float32).unsqueeze(1)
+    x_val_tensor = torch.tensor(x_val, dtype=torch.float32)
     y_val_tensor = torch.tensor(y_val, dtype=torch.long)
 
     print(f"x_train_tensor: {x_train_tensor.shape}")
@@ -21,14 +32,11 @@ def train_model(model, x_train, y_train, x_val, y_val, num_epochs=None):
     val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
     val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
-    # 모델 생성 및 컴파일
-    num_channels = x_train.shape[1]  # 데이터에 따라 변경
-    model = EEGNet(num_classes=len(np.unique(y_train)), num_channels=num_channels)
-
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters())
-
+    print(model)
     # 학습
+    seed_everything(42)
     for epoch in range(num_epochs):
         model.train()
         for i, (x_batch, y_batch) in enumerate(train_loader):  # 새로운 차원 추가
